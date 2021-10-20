@@ -13,7 +13,7 @@ router.post("/ClearUnseenCount", chatController.postClearUnseenCount);
 
 router.get("/user", chatController.getUserProfile);
 router.get("/chatlist", chatController.getChatList);
-router.delete("/chatlist/messages/:convoId", chatController.deleteMessages);
+// router.delete("/chatlist/messages/:convoId", chatController.deleteMessages);
 
 router.post("/chatlist/:convoId/:guestId/:code", chatController.deleteChat);
 router.post("/chatMessage/:convoId/:uuid/:guestId/:code", chatController.deleteMessage);

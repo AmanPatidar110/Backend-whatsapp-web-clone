@@ -146,25 +146,25 @@ exports.postSetSeenMessages = async (req, res, next) => {
 };
 
 
-exports.deleteMessages = async (req, res, next) => {
-    const convoId = req.params.convoId;
+// exports.deleteMessages = async (req, res, next) => {
+//     const convoId = req.params.convoId;
 
-    try {
-        const result = await Message.deleteMany({ conversationId: convoId });
-        const updateResult = await Convo.updateOne({ _id: convoId }, { lastMessage: { conversationId: convoId } })
-        console.log("deleting messages " + convoId)
+//     try {
+//         const result = await Message.deleteMany({ conversationId: convoId });
+//         const updateResult = await Convo.updateOne({ _id: convoId }, { lastMessage: { conversationId: convoId } })
+//         console.log("deleting messages " + convoId)
 
-        if (!result) {
-            return res.status(501).json({ message: "Messages not deleted." });
-        }
+//         if (!result) {
+//             return res.status(501).json({ message: "Messages not deleted." });
+//         }
 
-        res.status(200).json({ message: "Messages deleted successfully." });
+//         res.status(200).json({ message: "Messages deleted successfully." });
 
-    } catch (error) {
-        if (!error.statusCode) error.statusCode = 500;
-        return next(error);
-    }
-}
+//     } catch (error) {
+//         if (!error.statusCode) error.statusCode = 500;
+//         return next(error);
+//     }
+// }
 
 
 exports.deleteChat = async (req, res, next) => {
