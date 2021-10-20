@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
+const compression = require('compression');
 
 const LoginMiddleware = require('./middlewares/LoginMiddleware')
 const authRoutes = require('./routes/auth');
@@ -24,6 +25,7 @@ mongoose.connect(MongoURI, {
     console.log('Connected to DB!');
 }).catch(err => {console.log(err)});
 
+app.use(compression());
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
