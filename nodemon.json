@@ -1,0 +1,6 @@
+{
+    "env": {
+       "MONGO_URI": "mongodb+srv://aman:4o4COIVDEDWQYtNc@cluster0.ijtx4.mongodb.net/WhatsappClone?retryWrites=true&w=majority",
+       "FRONT_END_URL": "http://localhost:3000"
+    }
+}
