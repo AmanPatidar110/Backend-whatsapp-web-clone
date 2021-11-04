@@ -7,6 +7,7 @@ const compression = require('compression');
 
 const LoginMiddleware = require('./middlewares/LoginMiddleware')
 const authRoutes = require('./routes/auth');
+const statusRoutes = require('./routes/status');
 const chatRoutes = require('./routes/chat');
 const User = require('./models/user');
 const Message = require('./models/messages');
@@ -40,6 +41,7 @@ app.use(bodyParser.json())
 
 app.use('/auth', LoginMiddleware, authRoutes);
 app.use('/chat', LoginMiddleware, chatRoutes);
+app.use('/status', LoginMiddleware, statusRoutes);
 
 app.use('/images', express.static(path.join('images')));
 app.use('/chataudio', express.static(path.join('chataudio')));

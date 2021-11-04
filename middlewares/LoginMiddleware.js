@@ -14,6 +14,12 @@ function LoginMiddleware(req, res, next) {
     res.status(403).send("Authorization token not found");
     return;
   }
+
+  // res.locals.userDetails = {
+  //   id: "4vIvs7sb6qRzAxwf0qRr3eFje4F3",
+  //   phone: "+913333333333"
+  // }
+  // next();
   
   admin
   .auth()

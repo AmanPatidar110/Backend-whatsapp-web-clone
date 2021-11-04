@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const Message = require('./messages.js');
-const messageSchema = mongoose.model('Message').schema
 
 const Schema = mongoose.Schema
 
