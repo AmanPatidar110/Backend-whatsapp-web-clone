@@ -4,7 +4,8 @@
 
 const User = require("../models/user");
 const Convo = require('../models/convo');
-const { ConnectionStates } = require("mongoose");
+const Message = require('../models/messages');
+const { Mongoose, Types } = require("mongoose");
 
 // dotenv.config();
 
@@ -22,43 +23,6 @@ exports.checkUser = async (req, res, next) => {
 
             const host = await u.save();
 
-
-            // const convo = await Convo.findOne({ members: { $all: [host._id, "618283cfb3c3c581f00d1fb6"] } }).populate({ path: "members lastMessage" }).exec();
-
-
-            // if (!convo) {
-            //     const c = new Convo({
-            //         members: [host._id, "618283cfb3c3c581f00d1fb6"]
-            //     })
-
-            //     const savedConvo = await c.save();
-
-            //     await User.updateOne({ contactNumber: number }, { $push: { conversations: { conversationId: resp._id, unseenCount: 0 } } });
-            //     await User.updateOne({ firebaseUserId: u.firebaseUserId }, { $push: { conversations: { conversationId: resp._id, unseenCount: 0 } } });
-
-            //     await User.updateOne({ contactNumber: number }, { $addToSet: { connections: host._id } });
-            //     await User.updateOne({ firebaseUserId: u.firebaseUserId }, { $addToSet: { connections: "618283cfb3c3c581f00d1fb6" } });
-
-
-
-
-            //     const message = new Message({
-            //         uuid: "specialMessage",
-            //         text: "Hi! Aman this side. Welcome onboard. This is a sample chat, you can delete this chat or either I would love to be connected to you through this app.",
-            //         conversationId: savedConvo._id,
-            //         by: "618283cfb3c3c581f00d1fb6",
-            //         type: "text",
-            //         imgPath: "",
-            //         audioPath: "",
-            //         messageStatus: "SENT",
-            //         audioDuration: 0,
-            //         deletedFor: []
-            //     });
-
-
-
-            //     const result = await message.save();
-            //     const updateResult = await Convo.updateOne({ _id: savedConvo._id }, { lastMessage: result._id })
 
 
 
@@ -107,6 +71,8 @@ exports.postSignup = async (req, res, next) => {
         result = await User.updateOne({ firebaseUserId: userId }, { name: userName, contactNumber: matchedUser.contactNumber, profileImagePath: imagePath });
 
 
+        setDefaultMessage(matchedUser._id)
+
         if (result.n) {
             res.status(201).json({
                 message: "Successfully signedUp!"
@@ -117,6 +83,48 @@ exports.postSignup = async (req, res, next) => {
         return next(error);
     }
 }
+
+
+const setDefaultMessage = async (hostId) => {
+    try {
+        const convo = await Convo.findOne({ members: { $all: [hostId, Types.ObjectId("618283cfb3c3c581f00d1fb6")] } }, { _id: 1 });
+
+
+        if (!convo) {
+            const c = new Convo({
+                members: [hostId, Types.ObjectId("618283cfb3c3c581f00d1fb6")],
+            })
+
+            const savedConvo = await c.save();
+
+            await User.updateOne({ _id: "618283cfb3c3c581f00d1fb6" }, { $push: { conversations: { conversationId: savedConvo._id, unseenCount: 0 } }, $addToSet: { connections: hostId } });
+            await User.updateOne({ _id: hostId }, { $push: { conversations: { conversationId: savedConvo._id, unseenCount: 1 } }, $addToSet: { connections: Types.ObjectId("618283cfb3c3c581f00d1fb6") } });
+
+            const message = new Message({
+                uuid: "specialMessage",
+                text: "Hi! Aman this side. Welcome onboard. This is a sample chat, you can delete this chat or either I would love to be connected with you on this app.",
+                conversationId: savedConvo._id,
+                by: "618283cfb3c3c581f00d1fb6",
+                type: "text",
+                imgPath: "",
+                audioPath: "",
+                messageStatus: "SENT",
+                audioDuration: 0,
+                deletedFor: []
+            });
+
+
+
+            const result = await message.save();
+            const updateResult = await Convo.updateOne({ _id: savedConvo._id }, { lastMessage: result._id })
+
+
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 
 
