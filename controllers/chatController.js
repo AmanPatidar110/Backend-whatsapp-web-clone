@@ -17,7 +17,12 @@ exports.getChatList = async (req, res, next) => {
                 }
             }).exec();
 
-        res.status(200).json(guest.conversations);
+            const plain = guest.conversations
+            const sorted = [...guest.conversations.sort((a, b) => a.lastMessage?.createdAt > b.lastMessage?.createdAt ? -1 : 1)]
+        res.status(200).json(sorted);
+
+
+        // res.status(200).json(guest.conversations);
 
     } catch (error) {
         if (!error.statusCode) error.statusCode = 500;
@@ -32,7 +37,8 @@ exports.getUserProfile = async (req, res, next) => {
         const userObj = {
             userId: user._id,
             profileImagePath: user.profileImagePath,
-            userName: user.name
+            userName: user.name,
+            about: user.about
         }
         if (user) {
 
@@ -279,6 +285,9 @@ exports.postConvo = async (req, res, next) => {
 
             await User.updateOne({ contactNumber: number }, { $push: { conversations: { conversationId: resp._id, unseenCount: 0 } } });
             await User.updateOne({ firebaseUserId: userId }, { $push: { conversations: { conversationId: resp._id, unseenCount: 0 } } });
+           
+            await User.updateOne({ contactNumber: number }, { $addToSet: { connections: host._id } });
+            await User.updateOne({ firebaseUserId: userId }, { $addToSet:{ connections: guest._id } });
 
 
 
@@ -289,6 +298,7 @@ exports.postConvo = async (req, res, next) => {
         }
 
     } catch (error) {
+        console.log(error);
         if (!error.statusCode) error.statusCode = 500;
         return next(error);
     }
