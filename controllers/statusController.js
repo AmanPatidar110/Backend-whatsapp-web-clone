@@ -3,15 +3,9 @@ const User = require("../models/user");
 
 
 exports.postStatus = async (req, res, next) => {
-    const url = req.protocol + '://' + req.get('host');
-    let imagePath = '';
-    const file = req.file;
+
     const caption = req.body.caption;
-
-    if (file) {
-        imagePath = url + "/images/" + file.filename;
-    }
-
+    const statusImagePath = req.body.statusImagePath;
     const firebaseUserId = res.locals.userDetails.id;
 
 
@@ -33,7 +27,7 @@ exports.postStatus = async (req, res, next) => {
         const status = new Status({
             postedBy: host._id,
             expiry: expiry,
-            statusImagePath: imagePath,
+            statusImagePath: statusImagePath,
             caption: caption
         })
 
@@ -60,7 +54,7 @@ exports.getStatusList = async (req, res, next) => {
 
         const statusPromises = host.toObject().connections.map(async (userId) => {
 
-            const statusOfUser = await Status.find({ postedBy: userId._id, expiry: { $gt: new Date }, seenBy: {$ne: host._id} });
+            const statusOfUser = await Status.find({ postedBy: userId._id, expiry: { $gt: new Date }, seenBy: { $ne: host._id } });
             return {
                 user: userId,
                 statusArray: statusOfUser
@@ -77,10 +71,10 @@ exports.getStatusList = async (req, res, next) => {
 
         let statusList = await Promise.all(statusPromises);
         statusList = statusList.filter(single => single.statusArray.length > 0);
-        
+
         let viewedStatusList = await Promise.all(viewedStatusPromises);
         viewedStatusList = viewedStatusList.filter(single => single.statusArray.length > 0);
-console.log(viewedStatusList);
+        console.log(viewedStatusList);
 
         const allMyStatus = await Status.find({ postedBy: host._id, expiry: { $gt: new Date } });
 
@@ -104,14 +98,14 @@ exports.putStatusView = async (req, res, next) => {
 
     const firebaseUserId = res.locals.userDetails.id;
     const statusId = req.body.statusId;
-   
-    
+
+
     let result;
-    
+
     try {
         const host = await User.findOne({ firebaseUserId: firebaseUserId }, { _id: 1, connections: 1 }).populate({ path: "connections", select: "name" });
 
-        const result = await Status.updateOne({ _id: statusId }, { $addToSet: { seenBy: host._id} });
+        const result = await Status.updateOne({ _id: statusId }, { $addToSet: { seenBy: host._id } });
 
         if (!result) {
             return res.status(500).json({

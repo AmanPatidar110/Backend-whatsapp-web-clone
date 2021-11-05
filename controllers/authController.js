@@ -44,15 +44,10 @@ exports.checkUser = async (req, res, next) => {
 
 
 exports.postSignup = async (req, res, next) => {
-    const url = req.protocol + '://' + req.get('host');
-    let imagePath = '';
-    const file = req.file;
 
-    if (file) {
-        imagePath = url + "/images/" + file.filename;
-    }
     const userId = res.locals.userDetails.id;
     const userName = req.body.name;
+    const profileImagePath = req.body.profileImagePath;
 
     let result;
 
@@ -65,7 +60,7 @@ exports.postSignup = async (req, res, next) => {
             });
         }
 
-        result = await User.updateOne({ firebaseUserId: userId }, { name: userName, contactNumber: matchedUser.contactNumber, profileImagePath: imagePath });
+        result = await User.updateOne({ firebaseUserId: userId }, { name: userName, contactNumber: matchedUser.contactNumber, profileImagePath: profileImagePath });
 
 
         setDefaultMessage(matchedUser._id)
@@ -161,23 +156,15 @@ exports.postOTP = async (req, res, next) => {
 
 
 exports.putProfileImage = async (req, res, next) => {
-    const url = req.protocol + '://' + req.get('host');
-    let imagePath = '';
-    const file = req.file;
 
-    console.log(file, "dsdsdsdsdsd");
-
-    if (file) {
-        imagePath = url + "/images/" + file.filename;
-    }
 
     const firebaseUserId = res.locals.userDetails.id;
-
+    const profileImagePath = req.body.profileImagePath;
 
     let result;
 
     try {
-        const result = await User.updateOne({ firebaseUserId: firebaseUserId }, { profileImagePath: imagePath });
+        const result = await User.updateOne({ firebaseUserId: firebaseUserId }, { profileImagePath: profileImagePath });
 
         if (!result) {
             return res.status(500).json({
@@ -188,7 +175,7 @@ exports.putProfileImage = async (req, res, next) => {
         if (result) {
             res.status(200).json({
                 message: "Profile image saved successfully.",
-                profileImagePath: imagePath
+                profileImagePath: profileImagePath
             });
         }
     } catch (error) {

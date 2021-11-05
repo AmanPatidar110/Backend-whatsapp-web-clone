@@ -18,7 +18,7 @@ exports.getChatList = async (req, res, next) => {
             }).exec();
 
             const plain = guest.conversations
-            const sorted = [...guest.conversations.sort((a, b) => a.lastMessage?.createdAt > b.lastMessage?.createdAt ? -1 : 1)]
+            const sorted = [...guest.conversations.sort((a, b) => a.lastMessage?.createdAt > b.lastMessage?.createdAt ? 1 : -1)]
         res.status(200).json(sorted);
 
 
@@ -79,18 +79,11 @@ exports.postMessage = async (req, res, next) => {
     const type = req.body.type;
     const messageStatus = req.body.messageStatus;
     const audioDuration = req.body.audioDuration;
+    const imagePath = req.body.imgPath;
+    const audioPath = req.body.audioPath;
 
-    let imagePath = '';
-    let audioPath = '';
 
-    console.log(convoId, msg, by, type, messageStatus, "POSTMESSAGE")
 
-    const url = req.protocol + '://' + req.get('host');
-
-    if (req.file) {
-       if(type==='image') imagePath = url + "/images/" + req.file.filename;
-       if(type==='audio') audioPath = url + "/chataudio/" + req.file.filename;
-    }
 
     const message = new Message({
         uuid: uuid,
