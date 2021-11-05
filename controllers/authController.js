@@ -23,9 +23,6 @@ exports.checkUser = async (req, res, next) => {
 
             const host = await u.save();
 
-
-
-
             return res.status(200).json({
                 isNewUser: true,
                 isProfileComplete: false
@@ -192,6 +189,33 @@ exports.putProfileImage = async (req, res, next) => {
             res.status(200).json({
                 message: "Profile image saved successfully.",
                 profileImagePath: imagePath
+            });
+        }
+    } catch (error) {
+        console.log(error)
+        if (!error.statusCode) error.statusCode = 500;
+        return next(error);
+    }
+}
+
+
+exports.deleteProfileImage = async (req, res, next) => {
+    const firebaseUserId = res.locals.userDetails.id;
+
+    let result;
+
+    try {
+        const result = await User.updateOne({ firebaseUserId: firebaseUserId }, { profileImagePath: "" });
+
+        if (!result) {
+            return res.status(500).json({
+                message: "Error accessing database!"
+            });
+        }
+
+        if (result) {
+            res.status(200).json({
+                message: "Profile image removed successfully."
             });
         }
     } catch (error) {
