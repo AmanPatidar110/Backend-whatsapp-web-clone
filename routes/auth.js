@@ -13,6 +13,7 @@ router.get("/user", authController.checkUser);
 router.post("/signup", fileExtractor, authController.postSignup);
 router.post("/signup/otp", authController.postOTP);
 router.put("/profileImage", fileExtractor ,authController.putProfileImage);
+router.delete("/profileImage" ,authController.deleteProfileImage);
 router.put("/userName" ,authController.putUserName);
 router.put("/about" ,authController.putAbout);
 
