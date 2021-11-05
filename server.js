@@ -67,7 +67,11 @@ const server = app.listen(port, () => {
 });
 
 
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+  }
+});
 
 //________________________________
 
