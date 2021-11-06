@@ -52,9 +52,10 @@ exports.getStatusList = async (req, res, next) => {
         const firebaseUserId = res.locals.userDetails.id;
         const host = await User.findOne({ firebaseUserId: firebaseUserId }, { _id: 1, connections: 1 }).populate({ path: "connections", select: "name" });
 
+        const now = new Date;
         const statusPromises = host.toObject().connections.map(async (userId) => {
 
-            const statusOfUser = await Status.find({ postedBy: userId._id, expiry: { $gt: new Date }, seenBy: { $ne: host._id } });
+            const statusOfUser = await Status.find({ postedBy: userId._id, expiry: { $gt: now }, seenBy: { $ne: host._id } });
             return {
                 user: userId,
                 statusArray: statusOfUser
@@ -62,7 +63,7 @@ exports.getStatusList = async (req, res, next) => {
         });
         const viewedStatusPromises = host.toObject().connections.map(async (userId) => {
 
-            const statusOfUser = await Status.find({ postedBy: userId._id, expiry: { $gt: new Date }, seenBy: host._id });
+            const statusOfUser = await Status.find({ postedBy: userId._id, expiry: { $gt: now }, seenBy: host._id });
             return {
                 user: userId,
                 statusArray: statusOfUser

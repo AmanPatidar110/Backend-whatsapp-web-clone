@@ -18,7 +18,7 @@ exports.getChatList = async (req, res, next) => {
             }).exec();
 
             const plain = guest.conversations
-            const sorted = [...guest.conversations.sort((a, b) => a.lastMessage?.createdAt > b.lastMessage?.createdAt ? 1 : -1)]
+            const sorted = guest.conversations.sort((a, b) => a.lastMessage?.createdAt > b.lastMessage?.createdAt ? -1 : 1)
         res.status(200).json(sorted);
 
 
