@@ -3,7 +3,6 @@ const Message = require('../models/messages');
 const User = require('../models/user');
 
 const mongoose = require('mongoose');
-const { io, helper } = require('../socket');
 
 
 exports.getChatList = async (req, res, next) => {
